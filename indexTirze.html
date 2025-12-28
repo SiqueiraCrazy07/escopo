@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Guia Interativo para Tirzepatida - Protocolos, Dosagens e Cuidados.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Configurações PWA (iOS) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tirzepatida Guide">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <title>Tirzepatida Lab System</title>
+    
+    <!-- Manifesto PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Bibliotecas Externas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Libre+Barcode+128&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
+        
+        @media (min-width: 768px) {
+            .lab-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+            body { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        }
+        
+        /* Utilitários */
+        .mono-num { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; }
+        .barcode-font { font-family: 'Libre Barcode 128', cursive; font-size: 24px; line-height: 1; }
+        
+        /* Inputs */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .price-input { background: transparent; border: none; outline: none; font-family: 'JetBrains Mono', monospace; }
+        .price-input::placeholder { color: rgba(255,255,255,0.3); }
+
+        /* Estilos Visuais */
+        .bg-clinical { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
+        
+        /* Abas (Lógica de Exibição) */
+        .tab-btn.active {
+            color: #2563eb; 
+            border-bottom-color: #2563eb;
+            background-color: #eff6ff;
+            font-weight: 600;
+        }
+        .tab-btn {
+            color: #64748b; 
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-content { display: none; animation: fadeIn 0.2s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CSS VIAL (BACKUP REALISTA) --- */
+        .vial-container { perspective: 600px; }
+        .glass-body {
+            background: 
+                linear-gradient(90deg, rgba(255,255,255,0) 5%, rgba(255,255,255,0.6) 12%, rgba(255,255,255,0) 20%),
+                linear-gradient(90deg, rgba(255,255,255,0) 80%, rgba(255,255,255,0.3) 90%, rgba(255,255,255,0) 95%),
+                linear-gradient(180deg, rgba(240, 248, 255, 0.1) 0%, rgba(230, 245, 255, 0.2) 100%);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-right: 1px solid rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.2), 0 15px 25px -5px rgba(0,0,0,0.2);
+            backdrop-filter: blur(1px);
+        }
+        .glass-thick-bottom {
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(200, 220, 230, 0.6) 100%);
+            border-top: 1px solid rgba(255,255,255,0.3);
+            border-radius: 0 0 16px 16px;
+        }
+        .powder-layer {
+            background-color: #fcfcfc;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05), inset 0 2px 5px rgba(255,255,255,1);
+        }
+        .powder-surface {
+            background: radial-gradient(ellipse at center, #ffffff 40%, #e2e8f0 100%);
+            border-radius: 50%;
+            transform: scaleY(0.25);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            opacity: 0.9;
+        }
+        .aluminum-cap {
+            background: 
+                repeating-linear-gradient(90deg, transparent 0, transparent 2px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px),
+                linear-gradient(90deg, #94a3b8 0%, #f1f5f9 30%, #cbd5e1 60%, #64748b 100%);
+            border-top: 1px solid rgba(255,255,255,0.8);
+            border-bottom: 1px solid rgba(0,0,0,0.4);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .plastic-lid {
+            background: linear-gradient(90deg, #c2410c 0%, #fb923c 40%, #ea580c 100%);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.2);
+            border-bottom: 1px solid #7c2d12;
+        }
+        .label-wrap-shadow {
+            background: linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 15%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.2) 100%);
+            pointer-events: none;
+        }
+
+        /* Scrollbar Oculta */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Container Principal -->
+    <div class="w-full md:max-w-[400px] bg-white md:rounded-[2rem] lab-shadow overflow-hidden border-0 md:border border-slate-200 flex flex-col h-full md:h-[90vh] relative">
+        
+        <!-- HEADER (Fixo) -->
+        <div class="bg-clinical p-5 text-white relative border-b-4 border-blue-600 shrink-0 z-20 shadow-md">
+            <div class="flex justify-between items-center mb-1">
+                <div>
+                    <span class="bg-blue-600 text-[10px] font-bold px-2 py-0.5 rounded text-white tracking-wider shadow-sm">RX ONLY</span>
+                    <h1 class="text-xl font-bold tracking-tight uppercase text-white mt-1">Tirzepatida</h1>
+                </div>
+                <div class="text-right opacity-80">
+                    <p class="text-[10px] font-mono tracking-wide">60MG / 2.4ML</p>
+                    <p class="text-[10px] font-mono tracking-wide">LOTE: 2025-TZ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGAÇÃO (Abas) -->
+        <div class="flex border-b border-slate-200 bg-white overflow-x-auto shrink-0 z-10 no-scrollbar">
+            <button onclick="switchTab('sobre')" id="tab-sobre" class="tab-btn active flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+                <i class="fa-solid fa-circle-info mb-1.5 block text-base"></i> Sobre
+            </button>
+            <button onclick="switchTab('apresentacao')" id="tab-apresentacao" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+                <i class="fa-solid fa-flask mb-1.5 block text-base"></i> Dados
+            </button>
+            <button onclick="switchTab('precos')" id="tab-precos" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+                <i class="fa-solid fa-syringe mb-1.5 block text-base"></i> Doses
+            </button>
+            <button onclick="switchTab('tratamento')" id="tab-tratamento" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+                <i class="fa-solid fa-list-ol mb-1.5 block text-base"></i> TTO
+            </button>
+            <button onclick="switchTab('estilo')" id="tab-estilo" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors">
+                <i class="fa-solid fa-heart-pulse mb-1.5 block text-base"></i> Saúde
+            </button>
+        </div>
+
+        <!-- CONTEÚDO (Abas Independentes) -->
+        <div class="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar relative">
+            
+            <!-- TAB 1: SOBRE O FÁRMACO -->
+            <div id="content-sobre" class="tab-content active p-5">
+                
+                <!-- VISUAL DA AMPOLA -->
+                <div class="flex flex-col items-center justify-center mb-8 mt-2 relative min-h-[200px]">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-white rounded-full blur-3xl opacity-80"></div>
+                    
+                    <!-- Imagem Real -->
+                    <img src="image.png" alt="Ampola de Tirzepatida" class="relative z-20 max-h-56 rounded-lg shadow-xl border border-slate-200 bg-white object-contain" onerror="this.style.display='none'; document.getElementById('css-vial-backup').style.display='flex';">
+                    
+                    <!-- Backup CSS Vial -->
+                    <div id="css-vial-backup" class="hidden flex-col items-center justify-center w-full transform scale-110">
+                        <div class="relative w-32 h-56 vial-container flex flex-col items-center justify-end pb-4">
+                            <div class="w-14 h-3 plastic-lid rounded-t-[2px] z-30 shadow-md border-b border-orange-800 absolute top-3"></div>
+                            <div class="w-14 h-5 aluminum-cap z-20 shadow-md absolute top-6">
+                                <div class="w-full h-full opacity-20 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,#000_2px,#000_3px)] mix-blend-overlay"></div>
+                            </div>
+                            <div class="w-10 h-6 bg-slate-300/30 border-x border-slate-400/40 backdrop-blur-sm z-10 absolute top-8"></div>
+                            <div class="w-24 h-40 glass-body rounded-t-lg rounded-b-[20px] relative overflow-hidden z-10 flex items-end">
+                                <div class="absolute bottom-2 left-1 right-1 h-[25%] powder-layer rounded-b-[14px] overflow-hidden z-10"><div class="absolute top-0 left-0 right-0 h-4 powder-surface"></div></div>
+                                <div class="absolute bottom-0 w-full h-3 glass-thick-bottom rounded-b-[20px] z-20"></div>
+                                <div class="absolute top-8 left-0 right-0 h-20 bg-[#fef3c7] shadow-sm z-10 flex flex-col items-center justify-center p-1 border-y border-slate-300/30">
+                                    <div class="absolute inset-0 label-wrap-shadow"></div>
+                                    <div class="w-full h-0.5 bg-black mb-1.5 opacity-90 mx-auto w-[85%]"></div>
+                                    <span class="text-[11px] font-black text-black uppercase tracking-tight scale-x-110">TIRZEPATIDA</span>
+                                    <div class="flex gap-1.5 mt-1">
+                                        <span class="text-[8px] font-bold text-black border border-black px-1 rounded-[1px]">60 mg</span>
+                                        <span class="text-[8px] font-bold text-black border border-black px-1 rounded-[1px]">2,4 mL</span>
+                                    </div>
+                                    <span class="text-[7px] font-bold text-black mt-1 tracking-widest">25 mg/mL</span>
+                                    <div class="w-full h-0.5 bg-black mt-1.5 opacity-90 mx-auto w-[85%]"></div>
+                                </div>
+                                <div class="absolute top-0 right-2 w-2 h-full bg-gradient-to-b from-white/80 to-transparent blur-[2px] z-30 opacity-70"></div>
+                                <div class="absolute top-0 left-1 w-0.5 h-full bg-white/60 blur-[1px] z-30 opacity-50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                        <h3 class="text-xs font-bold text-blue-700 uppercase mb-2 flex items-center gap-2"><i class="fa-solid fa-dna text-sm"></i> Mecanismo de Ação</h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed text-justify">A Tirzepatida é o primeiro <strong>agonista duplo (GIP e GLP-1)</strong>. Ela imita hormônios naturais que sinalizam saciedade ao cérebro, retardam o esvaziamento gástrico e melhoram a secreção de insulina.</p>
+                    </div>
+                    
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
+                        <h3 class="text-xs font-bold text-indigo-800 uppercase mb-2 flex items-center gap-2"><i class="fa-solid fa-chart-line"></i> Evidência Clínica (SURMOUNT-1)</h3>
+                        <p class="text-[10px] text-indigo-700 leading-relaxed mb-3 text-justify">Estudos clínicos de fase 3 demonstraram eficácia superior no tratamento da obesidade, com perda de peso significativa em 72 semanas.</p>
+                        <div class="grid grid-cols-2 gap-3 text-center">
+                            <div class="bg-white p-2 rounded-lg border border-indigo-100 shadow-sm"><span class="block text-[9px] text-slate-400 uppercase">Redução Média</span><span class="text-sm font-bold text-indigo-600">Até -20,9%</span></div>
+                            <div class="bg-white p-2 rounded-lg border border-indigo-100 shadow-sm"><span class="block text-[9px] text-slate-400 uppercase">Segurança</span><span class="text-sm font-bold text-indigo-600">Validada</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Adaptação e Efeitos</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-100"><p class="text-[10px] font-bold text-amber-800 mb-1">Gastrointestinais</p><p class="text-[9px] text-amber-700 leading-tight">Náuseas, azia, empachamento.</p></div>
+                            <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-100"><p class="text-[10px] font-bold text-blue-800 mb-1">Sistêmicos</p><p class="text-[9px] text-blue-700 leading-tight">Fadiga leve, dor de cabeça.</p></div>
+                        </div>
+                        <div class="border-t border-slate-100 pt-3">
+                            <h4 class="text-[10px] font-bold text-slate-600 uppercase mb-2"><i class="fa-solid fa-kit-medical mr-1.5 text-green-500"></i> Como Aliviar</h4>
+                            <ul class="space-y-2 text-[10px] text-slate-500">
+                                <li class="flex gap-2 items-start"><i class="fa-solid fa-bowl-rice text-orange-400 mt-0.5"></i> <span><strong>Náuseas:</strong> Coma devagar, fracione refeições.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fa-solid fa-fire-burner text-red-400 mt-0.5"></i> <span><strong>Azia:</strong> Evite deitar logo após comer.</span></li>
+                                <li class="flex gap-2 items-start"><i class="fa-solid fa-glass-water text-blue-400 mt-0.5"></i> <span><strong>Constipação:</strong> Beba 2-3L de água/dia.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: DADOS -->
+            <div id="content-apresentacao" class="tab-content p-5">
+                <div class="bg-blue-600 rounded-xl p-4 shadow-md mb-5 flex justify-between items-center text-white">
+                    <div>
+                        <p class="text-[10px] uppercase font-bold text-blue-200">Valor da Ampola</p>
+                        <p class="text-[10px] text-blue-100">Referência de compra</p>
+                    </div>
+                    <div class="bg-black/20 rounded-lg px-3 py-1.5 flex items-baseline border border-white/20">
+                        <span class="text-xs mr-1 font-medium">R$</span>
+                        <input type="number" id="ampoulePriceInput" value="1800" class="price-input text-right font-bold text-xl w-20 p-0 text-white" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 p-3 border-b border-slate-100 flex justify-between items-center"><h3 class="text-xs font-bold text-slate-700 uppercase tracking-tight">Rendimento da Ampola</h3><span class="text-[10px] text-slate-400 mono-num bg-white px-2 py-0.5 rounded border border-slate-200">Total: 60mg</span></div>
+                    <table class="w-full text-xs">
+                        <thead><tr class="text-[10px] text-slate-400 uppercase tracking-wider text-left bg-slate-50/50 border-b border-slate-100"><th class="py-3 pl-4 font-semibold">Prescrição</th><th class="py-3 text-center font-semibold">Seringa (U-100)</th><th class="py-3 pr-4 text-right font-semibold">Rendimento</th></tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="group hover:bg-slate-50"><td class="py-3 pl-4 font-bold text-slate-700 mono-num">2.5 mg</td><td class="py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold mono-num text-[10px] border border-blue-100">10 UI (0.10mL)</span></td><td class="py-3 pr-4 text-right"><span class="font-bold text-slate-700 mono-num">24 Doses</span></td></tr>
+                            <tr class="group hover:bg-slate-50"><td class="py-3 pl-4 font-bold text-slate-700 mono-num">5.0 mg</td><td class="py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold mono-num text-[10px] border border-blue-100">20 UI (0.20mL)</span></td><td class="py-3 pr-4 text-right"><span class="font-bold text-slate-700 mono-num">12 Doses</span></td></tr>
+                            <tr class="group hover:bg-slate-50"><td class="py-3 pl-4 font-bold text-slate-700 mono-num">7.5 mg</td><td class="py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold mono-num text-[10px] border border-blue-100">30 UI (0.30mL)</span></td><td class="py-3 pr-4 text-right"><span class="font-bold text-slate-700 mono-num">8 Doses</span></td></tr>
+                            <tr class="group hover:bg-slate-50"><td class="py-3 pl-4 font-bold text-slate-700 mono-num">10.0 mg</td><td class="py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold mono-num text-[10px] border border-blue-100">40 UI (0.40mL)</span></td><td class="py-3 pr-4 text-right"><span class="font-bold text-slate-700 mono-num">6 Doses</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: DOSES FRACIONADAS -->
+            <div id="content-precos" class="tab-content p-0">
+                <div class="px-5 py-4 bg-white border-b border-slate-100"><h3 class="text-xs font-bold text-blue-700 uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-flask-vial"></i> Protocolo de Segurança</h3><ul class="space-y-2 text-[10px] text-slate-600"><li class="flex items-start gap-2.5"><div class="bg-green-100 p-1 rounded-full text-green-600 mt-0.5"><i class="fa-solid fa-check text-[8px]"></i></div> <span><strong>Aspiração Estéril:</strong> Retirada do frasco original para seringa U-100.</span></li><li class="flex items-start gap-2.5"><div class="bg-cyan-100 p-1 rounded-full text-cyan-600 mt-0.5"><i class="fa-solid fa-snowflake text-[8px]"></i></div> <span><strong>Conservação:</strong> Manter refrigerada (2°C-8°C).</span></li></ul></div>
+                <div class="bg-white"><div class="px-5 py-2 bg-slate-50 border-y border-slate-100 text-center"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Aplicação Avulsa (Seringa Pronta)</p></div><table class="w-full text-xs"><thead><tr class="text-[10px] text-slate-400 uppercase tracking-wider text-left border-b border-slate-200 bg-white"><th class="py-4 pl-5 font-semibold">Dose</th><th class="py-4 text-center font-semibold">Medida</th><th class="py-4 pr-5 text-right font-semibold">Valor</th></tr></thead><tbody class="divide-y divide-slate-100"><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">2.5 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">10 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 200,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">5.0 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">20 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 250,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">7.5 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">30 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 300,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">10.0 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">40 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 350,00</td></tr></tbody></table></div>
+            </div>
+
+            <!-- TAB 4: TRATAMENTO -->
+            <div id="content-tratamento" class="tab-content p-5">
+                <div class="mb-5">
+                     <div class="flex items-center justify-between mb-3"><h3 class="text-xs font-bold text-slate-700 uppercase tracking-tight">Tratamento 12 Semanas</h3><span class="text-[9px] bg-white border border-slate-200 px-2 py-1 rounded-full text-slate-500 font-bold">Única Ampola</span></div>
+                     <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl text-[10px] text-blue-800 leading-relaxed shadow-sm">
+                        <p class="mb-2"><i class="fa-solid fa-circle-info mr-1 text-blue-500"></i> <strong>Atenção ao Planejamento:</strong> Este protocolo utiliza uma ampola de 60mg para cobrir a fase inicial de titulação (12 semanas). <strong>Uma única ampola pode não ser suficiente para o tratamento completo.</strong></p>
+                        <p>O tratamento da obesidade é crônico. A manutenção dos resultados ou a progressão para doses maiores (10mg, 15mg) exigirá a aquisição de novos frascos conforme a resposta clínica individual.</p>
+                     </div>
+                </div>
+                <div class="space-y-4 mb-6 relative pl-3">
+                    <div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-slate-200"></div>
+                    <!-- Step 1 -->
+                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-blue-500 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">1</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-blue-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-blue-600 uppercase">Fase Inicial (4 Sem)</span><span class="text-[9px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">2.5 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-blue-600 mono-num">10 UI</p></div></div></div></div>
+                    <!-- Step 2 -->
+                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">2</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-indigo-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-indigo-600 uppercase">Fase Aumento (4 Sem)</span><span class="text-[9px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">5.0 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-indigo-600 mono-num">20 UI</p></div></div></div></div>
+                    <!-- Step 3 -->
+                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-purple-500 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">3</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-purple-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-purple-600 uppercase">Fase Final (4 Sem)</span><span class="text-[9px] font-bold text-white bg-purple-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">7.5 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-purple-600 mono-num">30 UI</p></div></div></div></div>
+                </div>
+
+                <!-- NOVA SEÇÃO TÉCNICA -->
+                <div class="bg-slate-100 border border-slate-200 rounded-xl p-4 shadow-inner mb-4">
+                    <h3 class="text-[10px] font-bold text-slate-700 uppercase mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-microscope text-slate-500"></i> Farmacocinética & Continuidade Clínica
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-white p-3 rounded-lg border border-slate-200">
+                            <h4 class="text-[10px] font-bold text-blue-700 mb-1">Por que aumentar a dose gradualmente?</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed text-justify">
+                                A titulação (escalonamento) é fundamental para a <strong>adaptação dos receptores gastrointestinais</strong>. A introdução súbita de altas doses de agonistas GLP-1/GIP provocaria efeitos adversos severos. O aumento progressivo permite atingir o "steady state" (equilíbrio plasmático) com tolerância adequada.
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg border border-slate-200">
+                            <h4 class="text-[10px] font-bold text-indigo-700 mb-1">Manutenção a Longo Prazo (Estudo SURMOUNT-1)</h4>
+                            <p class="text-[10px] text-slate-600 leading-relaxed text-justify">
+                                Estudos clínicos (como o SURMOUNT-1) demonstram que a eficácia máxima na perda de peso é frequentemente observada após <strong>40 a 72 semanas</strong> de uso contínuo. 
+                            </p>
+                            <div class="mt-2 pt-2 border-t border-slate-100">
+                                <p class="text-[9px] text-slate-500 italic">
+                                    <i class="fa-solid fa-arrow-turn-up mr-1"></i> A interrupção precoce pode impedir a redefinição do "set-point" metabólico (peso alvo do corpo), favorecendo o reganho de peso.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="shareOnWhatsApp()" class="w-full bg-green-500 text-white rounded-xl py-3 shadow-lg flex items-center justify-center gap-2 font-bold hover:bg-green-600 transition-colors">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Protocolo no WhatsApp
+                </button>
+            </div>
+
+            <!-- TAB 5: SAÚDE (ESTILO DE VIDA + IMC + EXAMES) -->
+            <div id="content-estilo" class="tab-content p-5">
+                
+                <!-- Calculadora IMC -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-calculator text-blue-500"></i> Calculadora de IMC</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div><label class="block text-[9px] font-bold text-slate-500 mb-1">PESO (kg)</label><input type="number" id="imcWeight" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs font-bold text-slate-700" placeholder="Ex: 80"></div>
+                        <div><label class="block text-[9px] font-bold text-slate-500 mb-1">ALTURA (m)</label><input type="number" id="imcHeight" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs font-bold text-slate-700" placeholder="Ex: 1.70" step="0.01"></div>
+                    </div>
+                    <button onclick="calculateIMC()" class="w-full bg-blue-600 text-white rounded-lg py-2 text-xs font-bold hover:bg-blue-700 transition-colors mb-3">CALCULAR</button>
+                    <div id="imcResult" class="hidden text-center p-2 rounded bg-slate-100 border border-slate-200"><p class="text-[10px] text-slate-500 uppercase">Seu IMC</p><p class="text-xl font-black text-slate-800 mono-num" id="imcValue">0.0</p><p class="text-[10px] font-bold mt-1" id="imcCategory">-</p></div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-medical text-blue-600"></i> Check-up Inicial Sugerido</h3>
+                    <div class="space-y-3 text-[10px] text-slate-600">
+                        <div class="flex gap-2"><i class="fa-solid fa-droplet text-red-500 mt-0.5"></i> <div><strong>Metabolismo:</strong> Glicemia de Jejum, Insulina Basal, Hemoglobina Glicada (HbA1c).</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-flask text-indigo-500 mt-0.5"></i> <div><strong>Função Hepática e Renal:</strong> TGO, TGP, Gama GT, Ureia, Creatinina.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-heart-pulse text-pink-500 mt-0.5"></i> <div><strong>Perfil Lipídico:</strong> Colesterol Total e Frações, Triglicérides.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-weight-scale text-yellow-600 mt-0.5"></i> <div><strong>Tireoide:</strong> TSH, T4 Livre.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-x-ray text-slate-500 mt-0.5"></i> <div><strong>Imagem:</strong> Ultrassom de Abdome Total (avaliar esteatose e vesícula).</div></div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm mb-5 flex items-start gap-4">
+                    <div class="bg-red-100 p-2.5 rounded-full text-red-600 mt-0.5"><i class="fa-solid fa-circle-exclamation text-base"></i></div>
+                    <div><h3 class="text-xs font-bold text-red-700 uppercase mb-1">Regra de Ouro</h3><p class="text-[11px] text-red-800 leading-snug"><strong>Em hipótese alguma deixe de comer!</strong> Pular refeições piora os enjoos e causa perda de massa magra.</p></div>
+                </div>
+                
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-utensils text-orange-500"></i> Nutrição & Suplementos</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3"><div class="bg-orange-50 p-2.5 rounded-lg text-orange-600 h-fit"><i class="fa-solid fa-drumstick-bite text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Fontes de Proteína</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Consuma <strong>frango e peixe</strong> diariamente. Essencial para evitar perda muscular.</p></div></div>
+                        <div class="flex gap-3"><div class="bg-blue-50 p-2.5 rounded-lg text-blue-600 h-fit"><i class="fa-solid fa-bottle-droplet text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Whey Protein</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Uso <strong>diário obrigatório</strong>. Garante aporte proteico mesmo sem apetite.</p></div></div>
+                        <div class="flex gap-3"><div class="bg-purple-50 p-2.5 rounded-lg text-purple-600 h-fit"><i class="fa-solid fa-bolt text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Creatina</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Essencial para força e preservação muscular.</p></div></div>
+                        <div class="flex gap-3"><div class="bg-green-50 p-2.5 rounded-lg text-green-600 h-fit"><i class="fa-solid fa-pills text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Multivitamínico</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Repõe micronutrientes devido à menor ingestão.</p></div></div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-leaf text-green-500"></i> Saúde Intestinal & Digestão</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3"><div class="bg-green-50 p-2.5 rounded-lg text-green-600 h-fit"><i class="fa-solid fa-wheat-awn text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Fibras São Vitais</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Use <strong>Psyllium, Chia ou Aveia</strong>. O trânsito intestinal fica mais lento, fibras + água são a solução.</p></div></div>
+                        <div class="flex gap-3"><div class="bg-yellow-50 p-2.5 rounded-lg text-yellow-600 h-fit"><i class="fa-solid fa-stopwatch text-sm"></i></div><div><h4 class="text-[11px] font-bold text-slate-700">Mastigação Lenta</h4><p class="text-[10px] text-slate-500 leading-tight mt-0.5">Coma devagar. O sinal de saciedade chega antes e previne o empachamento.</p></div></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-5">
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3"><h4 class="text-[10px] font-bold text-blue-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-glass-water"></i> Hidratação</h4><p class="text-[10px] text-blue-600 leading-tight">Beba 2 a 3 litros de água por dia.</p></div>
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-3"><h4 class="text-[10px] font-bold text-red-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-ban"></i> Evitar</h4><p class="text-[10px] text-red-600 leading-tight">Gorduras, frituras e <strong>álcool</strong>.</p></div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-dumbbell text-indigo-500"></i> Atividade Física & Sono</h3>
+                    <div class="bg-indigo-50 rounded-lg p-3 mb-3 border border-indigo-100"><p class="text-[10px] font-bold text-indigo-800 mb-1"><i class="fa-solid fa-fire mr-1"></i> Foco em Resistência</p><p class="text-[10px] text-indigo-700 leading-tight">A musculação é prioritária para proteger seu metabolismo.</p></div>
+                    <div class="grid grid-cols-2 gap-3"><div class="text-center p-3 border border-slate-100 rounded-lg"><i class="fa-solid fa-person-walking text-green-500 mb-1 text-base"></i><p class="text-[10px] font-bold text-slate-600">Cardio Moderado</p></div><div class="text-center p-3 border border-slate-100 rounded-lg"><i class="fa-solid fa-bed text-blue-400 mb-1 text-base"></i><p class="text-[10px] font-bold text-slate-600">Sono Reparador</p></div></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // --- Tab Switching ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.style.display = 'none';
+                el.classList.remove('active');
+            });
+            const selected = document.getElementById('content-' + tabId);
+            if(selected) {
+                selected.style.display = 'block';
+                // Pequeno delay para permitir a animação CSS (fadeIn)
+                setTimeout(() => selected.classList.add('active'), 10);
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        // --- LocalStorage Logic ---
+        const ampoulePriceInput = document.getElementById('ampoulePriceInput');
+        const savedPrice = localStorage.getItem('tirzepatida_price');
+        if (savedPrice && ampoulePriceInput) {
+            ampoulePriceInput.value = savedPrice;
+        }
+        if (ampoulePriceInput) {
+            ampoulePriceInput.addEventListener('input', (e) => {
+                localStorage.setItem('tirzepatida_price', e.target.value);
+            });
+        }
+
+        // --- BMI Logic ---
+        function calculateIMC() {
+            const weight = parseFloat(document.getElementById('imcWeight').value);
+            const height = parseFloat(document.getElementById('imcHeight').value);
+            
+            if (weight > 0 && height > 0) {
+                const imc = weight / (height * height);
+                const imcFormatted = imc.toFixed(1);
+                
+                const resultDiv = document.getElementById('imcResult');
+                const resultValue = document.getElementById('imcValue');
+                const resultCategory = document.getElementById('imcCategory');
+                
+                resultDiv.classList.remove('hidden');
+                resultValue.innerText = imcFormatted;
+                
+                let category = '', colorClass = '';
+                if (imc < 18.5) { category = 'Abaixo do Peso'; colorClass = 'text-blue-500'; }
+                else if (imc < 24.9) { category = 'Peso Normal'; colorClass = 'text-green-500'; }
+                else if (imc < 29.9) { category = 'Sobrepeso'; colorClass = 'text-yellow-600'; }
+                else if (imc < 34.9) { category = 'Obesidade Grau I'; colorClass = 'text-orange-500'; }
+                else if (imc < 39.9) { category = 'Obesidade Grau II'; colorClass = 'text-red-500'; }
+                else { category = 'Obesidade Grau III'; colorClass = 'text-red-700'; }
+                
+                resultCategory.innerText = category;
+                resultCategory.className = 'text-[10px] font-bold mt-1 ' + colorClass;
+            }
+        }
+
+        // --- WhatsApp Share ---
+        function shareOnWhatsApp() {
+            const text = 
+                `*🧬 GUIA COMPLETO TIRZEPATIDA*%0A%0A` +
+                
+                `*📅 PROTOCOLO 12 SEMANAS*%0A` +
+                `🔹 *Fase 1 (Início):* 4 sem. de 2.5mg (10 UI)%0A` +
+                `🔹 *Fase 2 (Aumento):* 4 sem. de 5.0mg (20 UI)%0A` +
+                `🔹 *Fase 3 (Final):* 4 sem. de 7.5mg (30 UI)%0A%0A` +
+                
+                `*⚠️ REGRAS DE OURO*%0A` +
+                `1️⃣ *Nunca fique sem comer:* Pular refeições piora os enjoos e destrói sua massa muscular.%0A` +
+                `2️⃣ *Hidratação:* Beba de 2 a 3 litros de água por dia.%0A%0A` +
+                
+                `*💊 SUPLEMENTAÇÃO DIÁRIA*%0A` +
+                `✅ *Whey Protein:* Obrigatório todo dia (mesmo sem fome).%0A` +
+                `✅ *Creatina:* Para força e preservação muscular.%0A` +
+                `✅ *Multivitamínico:* Reposição de nutrientes.%0A%0A` +
+
+                `*🥗 ALIMENTAÇÃO & TREINO*%0A` +
+                `🍗 *Proteínas:* Priorize frango e peixe em todas as refeições.%0A` +
+                `🚫 *Evitar:* Frituras, gorduras e álcool.%0A` +
+                `🏋️ *Exercício:* Musculação é prioridade absoluta.%0A%0A` +
+
+                `*🆘 SOS SINTOMAS*%0A` +
+                `🤢 *Náuseas:* Coma devagar e fracione as refeições.%0A` +
+                `🚽 *Constipação:* Água + Fibras (Psyllium ou Chia).`;
+
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Failed', err));
+            });
+        }
+        
+        // Initial Tab Load
+        switchTab('sobre');
+    </script>
+</body>
+</html>
+
+
