@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -107,18 +107,17 @@
             pointer-events: none;
         }
 
-        /* Scrollbar Oculta */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="text-slate-600 bg-white md:bg-slate-200 min-h-screen flex flex-col items-center md:justify-center p-0 md:p-4">
 
     <!-- Container Principal -->
-    <div class="w-full md:max-w-[400px] bg-white md:rounded-[2rem] lab-shadow overflow-hidden border-0 md:border border-slate-200 flex flex-col h-full md:h-[90vh] relative">
+    <div class="w-full md:max-w-[400px] bg-white md:rounded-[2rem] lab-shadow overflow-hidden border-0 md:border border-slate-200 flex flex-col h-full md:h-auto md:max-h-[95vh] relative">
         
-        <!-- HEADER (Fixo) -->
-        <div class="bg-clinical p-5 text-white relative border-b-4 border-blue-600 shrink-0 z-20 shadow-md">
+        <!-- HEADER -->
+        <div class="bg-clinical p-5 text-white relative border-b-4 border-blue-600 shrink-0 z-20 shadow-lg">
             <div class="flex justify-between items-center mb-1">
                 <div>
                     <span class="bg-blue-600 text-[10px] font-bold px-2 py-0.5 rounded text-white tracking-wider shadow-sm">RX ONLY</span>
@@ -126,34 +125,34 @@
                 </div>
                 <div class="text-right opacity-80">
                     <p class="text-[10px] font-mono tracking-wide">60MG / 2.4ML</p>
-                    <p class="text-[10px] font-mono tracking-wide">LOTE: 2025-TZ</p>
+                    <p class="text-[10px] font-mono tracking-wide font-bold">LOTE: 2026-TZ</p>
                 </div>
             </div>
         </div>
 
-        <!-- NAVEGAÇÃO (Abas) -->
-        <div class="flex border-b border-slate-200 bg-white overflow-x-auto shrink-0 z-10 no-scrollbar">
-            <button onclick="switchTab('sobre')" id="tab-sobre" class="tab-btn active flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+        <!-- NAVEGAÇÃO -->
+        <div class="flex border-b border-slate-200 bg-white/95 backdrop-blur overflow-x-auto shrink-0 sticky top-0 z-20 no-scrollbar shadow-sm no-print">
+            <button onclick="switchTab('sobre')" id="tab-sobre" class="nav-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center block">
                 <i class="fa-solid fa-circle-info mb-1.5 block text-base"></i> Sobre
             </button>
-            <button onclick="switchTab('apresentacao')" id="tab-apresentacao" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+            <button onclick="switchTab('apresentacao')" id="tab-apresentacao" class="nav-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center block">
                 <i class="fa-solid fa-flask mb-1.5 block text-base"></i> Dados
             </button>
-            <button onclick="switchTab('precos')" id="tab-precos" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+            <button onclick="switchTab('precos')" id="tab-precos" class="nav-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center block">
                 <i class="fa-solid fa-syringe mb-1.5 block text-base"></i> Doses
             </button>
-            <button onclick="switchTab('tratamento')" id="tab-tratamento" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors border-r border-slate-50 last:border-0">
+            <button onclick="switchTab('tto')" id="tab-tto" class="nav-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center block">
                 <i class="fa-solid fa-list-ol mb-1.5 block text-base"></i> TTO
             </button>
-            <button onclick="switchTab('estilo')" id="tab-estilo" class="tab-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center transition-colors">
+            <button onclick="switchTab('saude')" id="tab-saude" class="nav-btn flex-1 py-4 px-3 min-w-[70px] text-[10px] uppercase tracking-wider text-center block">
                 <i class="fa-solid fa-heart-pulse mb-1.5 block text-base"></i> Saúde
             </button>
         </div>
 
-        <!-- CONTEÚDO (Abas Independentes) -->
-        <div class="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar relative">
+        <!-- CONTEÚDO SCROLLÁVEL -->
+        <div class="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar scroll-smooth">
             
-            <!-- TAB 1: SOBRE O FÁRMACO -->
+            <!-- SEÇÃO 1: SOBRE O FÁRMACO -->
             <div id="content-sobre" class="tab-content active p-5">
                 
                 <!-- VISUAL DA AMPOLA -->
@@ -171,6 +170,7 @@
                                 <div class="w-full h-full opacity-20 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,#000_2px,#000_3px)] mix-blend-overlay"></div>
                             </div>
                             <div class="w-10 h-6 bg-slate-300/30 border-x border-slate-400/40 backdrop-blur-sm z-10 absolute top-8"></div>
+                            
                             <div class="w-24 h-40 glass-body rounded-t-lg rounded-b-[20px] relative overflow-hidden z-10 flex items-end">
                                 <div class="absolute bottom-2 left-1 right-1 h-[25%] powder-layer rounded-b-[14px] overflow-hidden z-10"><div class="absolute top-0 left-0 right-0 h-4 powder-surface"></div></div>
                                 <div class="absolute bottom-0 w-full h-3 glass-thick-bottom rounded-b-[20px] z-20"></div>
@@ -225,16 +225,16 @@
                 </div>
             </div>
 
-            <!-- TAB 2: DADOS -->
+            <!-- SEÇÃO 2: DADOS -->
             <div id="content-apresentacao" class="tab-content p-5">
-                <div class="bg-blue-600 rounded-xl p-4 shadow-md mb-5 flex justify-between items-center text-white">
+                <div class="bg-blue-600 rounded-xl p-4 shadow-md mb-5 flex justify-between items-center text-white no-print">
                     <div>
                         <p class="text-[10px] uppercase font-bold text-blue-200">Valor da Ampola</p>
                         <p class="text-[10px] text-blue-100">Referência de compra</p>
                     </div>
                     <div class="bg-black/20 rounded-lg px-3 py-1.5 flex items-baseline border border-white/20">
                         <span class="text-xs mr-1 font-medium">R$</span>
-                        <input type="number" id="ampoulePriceInput" value="2000" class="price-input text-right font-bold text-xl w-20 p-0 text-white" placeholder="0">
+                        <input type="number" id="ampoulePriceInput" value="1800" class="price-input text-right font-bold text-xl w-20 p-0 text-white" placeholder="0">
                     </div>
                 </div>
 
@@ -252,69 +252,103 @@
                 </div>
             </div>
 
-            <!-- TAB 3: DOSES FRACIONADAS -->
+            <!-- SEÇÃO 3: DOSES FRACIONADAS -->
             <div id="content-precos" class="tab-content p-0">
                 <div class="px-5 py-4 bg-white border-b border-slate-100"><h3 class="text-xs font-bold text-blue-700 uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-flask-vial"></i> Protocolo de Segurança</h3><ul class="space-y-2 text-[10px] text-slate-600"><li class="flex items-start gap-2.5"><div class="bg-green-100 p-1 rounded-full text-green-600 mt-0.5"><i class="fa-solid fa-check text-[8px]"></i></div> <span><strong>Aspiração Estéril:</strong> Retirada do frasco original para seringa U-100.</span></li><li class="flex items-start gap-2.5"><div class="bg-cyan-100 p-1 rounded-full text-cyan-600 mt-0.5"><i class="fa-solid fa-snowflake text-[8px]"></i></div> <span><strong>Conservação:</strong> Manter refrigerada (2°C-8°C).</span></li></ul></div>
                 <div class="bg-white"><div class="px-5 py-2 bg-slate-50 border-y border-slate-100 text-center"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Aplicação Avulsa (Seringa Pronta)</p></div><table class="w-full text-xs"><thead><tr class="text-[10px] text-slate-400 uppercase tracking-wider text-left border-b border-slate-200 bg-white"><th class="py-4 pl-5 font-semibold">Dose</th><th class="py-4 text-center font-semibold">Medida</th><th class="py-4 pr-5 text-right font-semibold">Valor</th></tr></thead><tbody class="divide-y divide-slate-100"><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">2.5 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">10 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 200,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">5.0 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">20 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 250,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">7.5 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">30 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 300,00</td></tr><tr class="group hover:bg-slate-50"><td class="py-4 pl-5 font-bold text-slate-700 mono-num">10.0 mg</td><td class="py-4 text-center"><span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded mono-num text-[10px] font-bold">40 UI</span></td><td class="py-4 pr-5 text-right font-bold text-emerald-600 mono-num text-sm">R$ 350,00</td></tr></tbody></table></div>
             </div>
 
-            <!-- TAB 4: TRATAMENTO -->
-            <div id="content-tratamento" class="tab-content p-5">
+            <!-- SEÇÃO 4: TRATAMENTO -->
+            <div id="content-tto" class="tab-content p-5">
                 <div class="mb-5">
-                     <div class="flex items-center justify-between mb-3"><h3 class="text-xs font-bold text-slate-700 uppercase tracking-tight">Tratamento 12 Semanas</h3><span class="text-[9px] bg-white border border-slate-200 px-2 py-1 rounded-full text-slate-500 font-bold">Única Ampola</span></div>
+                     <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-tight">Tratamento 12 Semanas</h3>
+                        <span class="text-[9px] bg-white border border-slate-200 px-2 py-1 rounded-full text-slate-500 font-bold">Única Ampola</span>
+                     </div>
                      <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl text-[10px] text-blue-800 leading-relaxed shadow-sm">
-                        <p class="mb-2"><i class="fa-solid fa-circle-info mr-1 text-blue-500"></i> <strong>Atenção ao Planejamento:</strong> Este protocolo utiliza uma ampola de 60mg para cobrir a fase inicial de titulação (12 semanas). <strong>Uma única ampola pode não ser suficiente para o tratamento completo.</strong></p>
-                        <p>O tratamento da obesidade é crônico. A manutenção dos resultados ou a progressão para doses maiores (10mg, 15mg) exigirá a aquisição de novos frascos conforme a resposta clínica individual.</p>
+                        <i class="fa-solid fa-circle-info mr-1 text-blue-500"></i> <strong>Atenção:</strong> Este protocolo escalonado é indicado exclusivamente para pacientes que adquirem a <strong>ampola fechada (60mg)</strong>.
                      </div>
                 </div>
                 <div class="space-y-4 mb-6 relative pl-3">
                     <div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-slate-200"></div>
+                    
                     <!-- Step 1 -->
-                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-blue-500 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">1</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-blue-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-blue-600 uppercase">Fase Inicial (4 Sem)</span><span class="text-[9px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">2.5 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-blue-600 mono-num">10 UI</p></div></div></div></div>
+                    <div class="relative pl-10">
+                        <div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-blue-500 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">1</div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-blue-300 transition-colors">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                                <span class="text-[10px] font-bold text-blue-600 uppercase">Adaptação (4 Semanas)</span>
+                                <span class="text-[9px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">2.5 mg</p></div>
+                                <div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-blue-600 mono-num">10 UI</p></div>
+                            </div>
+                            <p class="text-[9px] text-slate-400 mt-2 text-right italic">Consumo: 10mg</p>
+                        </div>
+                    </div>
+
                     <!-- Step 2 -->
-                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">2</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-indigo-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-indigo-600 uppercase">Fase Aumento (4 Sem)</span><span class="text-[9px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">5.0 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-indigo-600 mono-num">20 UI</p></div></div></div></div>
-                    <!-- Step 3 -->
-                    <div class="relative pl-10"><div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-purple-500 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">3</div><div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-purple-300 transition-colors"><div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2"><span class="text-[10px] font-bold text-purple-600 uppercase">Fase Final (4 Sem)</span><span class="text-[9px] font-bold text-white bg-purple-500 px-2 py-0.5 rounded-full">4 APLICAÇÕES</span></div><div class="flex justify-between items-center"><div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">7.5 mg</p></div><div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-purple-600 mono-num">30 UI</p></div></div></div></div>
+                    <div class="relative pl-10">
+                        <div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-indigo-500 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">2</div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-indigo-300 transition-colors">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                                <span class="text-[10px] font-bold text-indigo-600 uppercase">Manutenção (10 Semanas)</span>
+                                <span class="text-[9px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">10 APLICAÇÕES</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold">Dose</p><p class="text-sm font-bold text-slate-700 mono-num">5.0 mg</p></div>
+                                <div class="text-right"><p class="text-[9px] text-slate-400 uppercase font-bold">Medida</p><p class="text-sm font-bold text-indigo-600 mono-num">20 UI</p></div>
+                            </div>
+                            <p class="text-[9px] text-slate-400 mt-2 text-right italic">Consumo: 50mg (Restante)</p>
+                        </div>
+                    </div>
+
+                    <!-- Conditional Step -->
+                    <div class="relative pl-10">
+                        <div class="absolute left-0 top-1.5 w-10 h-10 bg-white border-2 border-amber-400 text-amber-500 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-sm">!</div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 shadow-sm">
+                            <div class="flex justify-between items-center border-b border-amber-200/50 pb-2 mb-2">
+                                <span class="text-[10px] font-bold text-amber-700 uppercase">Ajuste Condicional</span>
+                            </div>
+                            <p class="text-[10px] text-amber-800 leading-snug mb-2">
+                                <strong>Só aumente para 7.5mg (30 UI)</strong> se perceber que o efeito do remédio (inibição do apetite) diminuiu significativamente, caso contrário mantenha a dosagem de 5mg (20UI)
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- NOVA SEÇÃO TÉCNICA -->
                 <div class="bg-slate-100 border border-slate-200 rounded-xl p-4 shadow-inner mb-4">
                     <h3 class="text-[10px] font-bold text-slate-700 uppercase mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-microscope text-slate-500"></i> Farmacocinética & Continuidade Clínica
+                        <i class="fa-solid fa-microscope text-slate-500"></i> Farmacocinética & Continuidade
                     </h3>
-                    
                     <div class="space-y-3">
                         <div class="bg-white p-3 rounded-lg border border-slate-200">
-                            <h4 class="text-[10px] font-bold text-blue-700 mb-1">Por que aumentar a dose gradualmente?</h4>
+                            <h4 class="text-[10px] font-bold text-blue-700 mb-1">Titulação Gradual</h4>
                             <p class="text-[10px] text-slate-600 leading-relaxed text-justify">
-                                A titulação (escalonamento) é fundamental para a <strong>adaptação dos receptores gastrointestinais</strong>. A introdução súbita de altas doses de agonistas GLP-1/GIP provocaria efeitos adversos severos. O aumento progressivo permite atingir o "steady state" (equilíbrio plasmático) com tolerância adequada.
+                                A adaptação dos receptores é crucial. O aumento progressivo permite atingir o equilíbrio plasmático com tolerância adequada, evitando efeitos colaterais severos.
                             </p>
                         </div>
-
                         <div class="bg-white p-3 rounded-lg border border-slate-200">
-                            <h4 class="text-[10px] font-bold text-indigo-700 mb-1">Manutenção a Longo Prazo (Estudo SURMOUNT-1)</h4>
+                            <h4 class="text-[10px] font-bold text-indigo-700 mb-1">Manutenção a Longo Prazo</h4>
                             <p class="text-[10px] text-slate-600 leading-relaxed text-justify">
-                                Estudos clínicos (como o SURMOUNT-1) demonstram que a eficácia máxima na perda de peso é frequentemente observada após <strong>40 a 72 semanas</strong> de uso contínuo. 
+                                Estudos como o SURMOUNT-1 mostram eficácia máxima após 40-72 semanas. A interrupção precoce pode prejudicar a redefinição do "set-point" metabólico.
                             </p>
-                            <div class="mt-2 pt-2 border-t border-slate-100">
-                                <p class="text-[9px] text-slate-500 italic">
-                                    <i class="fa-solid fa-arrow-turn-up mr-1"></i> A interrupção precoce pode impedir a redefinição do "set-point" metabólico (peso alvo do corpo), favorecendo o reganho de peso.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="shareOnWhatsApp()" class="w-full bg-green-500 text-white rounded-xl py-3 shadow-lg flex items-center justify-center gap-2 font-bold hover:bg-green-600 transition-colors">
+                <button onclick="shareOnWhatsApp()" class="w-full bg-green-500 text-white rounded-xl py-3 shadow-lg flex items-center justify-center gap-2 font-bold hover:bg-green-600 transition-colors no-print">
                     <i class="fa-brands fa-whatsapp text-xl"></i> Enviar Protocolo no WhatsApp
                 </button>
             </div>
 
-            <!-- TAB 5: SAÚDE (ESTILO DE VIDA + IMC + EXAMES) -->
-            <div id="content-estilo" class="tab-content p-5">
+            <!-- SEÇÃO 5: SAÚDE (ESTILO DE VIDA + IMC + EXAMES) -->
+            <div id="content-saude" class="tab-content p-5">
                 
                 <!-- Calculadora IMC -->
-                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5 no-print">
                     <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-calculator text-blue-500"></i> Calculadora de IMC</h3>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div><label class="block text-[9px] font-bold text-slate-500 mb-1">PESO (kg)</label><input type="number" id="imcWeight" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs font-bold text-slate-700" placeholder="Ex: 80"></div>
@@ -327,11 +361,11 @@
                 <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-5">
                     <h3 class="text-xs font-bold text-slate-700 uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-medical text-blue-600"></i> Check-up Inicial Sugerido</h3>
                     <div class="space-y-3 text-[10px] text-slate-600">
-                        <div class="flex gap-2"><i class="fa-solid fa-droplet text-red-500 mt-0.5"></i> <div><strong>Metabolismo:</strong> Glicemia de Jejum, Insulina Basal, Hemoglobina Glicada (HbA1c).</div></div>
-                        <div class="flex gap-2"><i class="fa-solid fa-flask text-indigo-500 mt-0.5"></i> <div><strong>Função Hepática e Renal:</strong> TGO, TGP, Gama GT, Ureia, Creatinina.</div></div>
-                        <div class="flex gap-2"><i class="fa-solid fa-heart-pulse text-pink-500 mt-0.5"></i> <div><strong>Perfil Lipídico:</strong> Colesterol Total e Frações, Triglicérides.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-droplet text-red-500 mt-0.5"></i> <div><strong>Metabolismo:</strong> Glicemia, Insulina, HbA1c.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-flask text-indigo-500 mt-0.5"></i> <div><strong>Fígado/Rins:</strong> TGO, TGP, Gama GT, Creatinina.</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-heart-pulse text-pink-500 mt-0.5"></i> <div><strong>Lipídios:</strong> Colesterol Total e Frações, Triglicérides.</div></div>
                         <div class="flex gap-2"><i class="fa-solid fa-weight-scale text-yellow-600 mt-0.5"></i> <div><strong>Tireoide:</strong> TSH, T4 Livre.</div></div>
-                        <div class="flex gap-2"><i class="fa-solid fa-x-ray text-slate-500 mt-0.5"></i> <div><strong>Imagem:</strong> Ultrassom de Abdome Total (avaliar esteatose e vesícula).</div></div>
+                        <div class="flex gap-2"><i class="fa-solid fa-x-ray text-slate-500 mt-0.5"></i> <div><strong>Imagem:</strong> Ultrassom Abdome Total.</div></div>
                     </div>
                 </div>
 
@@ -384,7 +418,6 @@
             const selected = document.getElementById('content-' + tabId);
             if(selected) {
                 selected.style.display = 'block';
-                // Pequeno delay para permitir a animação CSS (fadeIn)
                 setTimeout(() => selected.classList.add('active'), 10);
             }
             
@@ -436,30 +469,29 @@
         // --- WhatsApp Share ---
         function shareOnWhatsApp() {
             const text = 
-                `*🧬 GUIA COMPLETO TIRZEPATIDA*%0A%0A` +
+                `*🧬 GUIA TIRZEPATIDA (PROTOCOLO OTIMIZADO)*%0A%0A` +
                 
-                `*📅 PROTOCOLO 12 SEMANAS*%0A` +
-                `🔹 *Fase 1 (Início):* 4 sem. de 2.5mg (10 UI)%0A` +
-                `🔹 *Fase 2 (Aumento):* 4 sem. de 5.0mg (20 UI)%0A` +
-                `🔹 *Fase 3 (Final):* 4 sem. de 7.5mg (30 UI)%0A%0A` +
+                `*📅 PLANEJAMENTO (1 FRASCO)*%0A` +
+                `🔹 *Início (4 Semanas):* 2.5mg (10 UI)%0A` +
+                `🔹 *Manutenção (10 Semanas):* 5.0mg (20 UI)%0A` +
+                `_(Total estimado: 14 Semanas de tratamento)_%0A%0A` +
                 
-                `*⚠️ REGRAS DE OURO*%0A` +
-                `1️⃣ *Nunca fique sem comer:* Pular refeições piora os enjoos e destrói sua massa muscular.%0A` +
-                `2️⃣ *Hidratação:* Beba de 2 a 3 litros de água por dia.%0A%0A` +
+                `*⚠️ ATENÇÃO À DOSE*%0A` +
+                `Mantenha 5.0mg enquanto estiver tendo resultados. Aumente para 7.5mg (30 UI) *apenas* se o efeito reduzir.%0A%0A` +
                 
                 `*💊 SUPLEMENTAÇÃO DIÁRIA*%0A` +
-                `✅ *Whey Protein:* Obrigatório todo dia (mesmo sem fome).%0A` +
-                `✅ *Creatina:* Para força e preservação muscular.%0A` +
+                `✅ *Whey Protein:* Obrigatório todo dia.%0A` +
+                `✅ *Creatina:* Preservação muscular.%0A` +
                 `✅ *Multivitamínico:* Reposição de nutrientes.%0A%0A` +
 
-                `*🥗 ALIMENTAÇÃO & TREINO*%0A` +
-                `🍗 *Proteínas:* Priorize frango e peixe em todas as refeições.%0A` +
-                `🚫 *Evitar:* Frituras, gorduras e álcool.%0A` +
-                `🏋️ *Exercício:* Musculação é prioridade absoluta.%0A%0A` +
-
+                `*🥗 REGRAS DE OURO*%0A` +
+                `1️⃣ Nunca fique sem comer.%0A` +
+                `2️⃣ Hidratação (2-3L água).%0A` +
+                `3️⃣ Priorize proteínas (frango/peixe).%0A%0A` +
+                
                 `*🆘 SOS SINTOMAS*%0A` +
-                `🤢 *Náuseas:* Coma devagar e fracione as refeições.%0A` +
-                `🚽 *Constipação:* Água + Fibras (Psyllium ou Chia).`;
+                `🤢 *Náuseas:* Coma devagar e fracione.%0A` +
+                `🚽 *Constipação:* Água + Fibras.`;
 
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }
@@ -478,6 +510,3 @@
     </script>
 </body>
 </html>
-
-
-
